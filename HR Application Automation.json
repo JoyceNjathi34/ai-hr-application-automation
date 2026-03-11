@@ -1,0 +1,1127 @@
+{
+  "name": "HR Application Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM",
+          "mode": "list",
+          "cachedResultName": "applications",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 478367655,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit#gid=478367655"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        -2112
+      ],
+      "id": "469c1145-947c-45d1-a114-7cc5323dedc5",
+      "name": "Get Applicaonts details",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BoAx5BYgmFrOupZl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const url = item.json.CV; // Replace 'CV' with your column name\n  const id = url.split(\"id=\")[1]; // Extracts the ID from URL\n  item.json.CV_ID = id;\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -2112
+      ],
+      "id": "3fd76757-70dd-47a2-a7c4-63c6914eb994",
+      "name": "Return details"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{$json[\"CV_ID\"]}}"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        672,
+        -2112
+      ],
+      "id": "342f5492-4e7c-44b1-938b-cc53fd1a9734",
+      "name": "Download CV File",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "2pf73IIWbvHMBMIR",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {
+          "keepSource": "json"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        -2112
+      ],
+      "id": "853bace3-c6c5-4cc1-9afc-24aae2e6cd15",
+      "name": "Extract CV text"
+    },
+    {
+      "parameters": {
+        "sendTo": "joycenjathi222@gmail.com",
+        "subject": "Qualified candidate",
+        "message": "=To: hr@company.com\nNew qualified candidate\nName: {{name}} Score: {{score}} Email: {{email}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1792,
+        -2304
+      ],
+      "id": "af0b2371-b1e2-4c16-bba3-ffb005b6108c",
+      "name": "Qualified candidate",
+      "webhookId": "55948f74-8d00-4b14-9bc7-ca61dddfc87c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lCin0CgOr3mYYI8M",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM",
+          "mode": "list",
+          "cachedResultName": "applications",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 478367655,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit#gid=478367655"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('AI CV Scoring').item.json.row_number }}",
+            "Timestamp": "={{ $('AI CV Scoring').item.json.Timestamp }}",
+            "Name": "={{ $('AI CV Scoring').item.json.Name }}",
+            "Email": "={{ $('AI CV Scoring').item.json.Email }}",
+            "Address": "={{ $('AI CV Scoring').item.json.Address }}",
+            "Job applied": "={{ $('AI CV Scoring').item.json['Job applied'] }}",
+            "CV": "={{ $('AI CV Scoring').item.json.CV }}",
+            "Decision": "={{ $('AI CV Scoring').item.json.decision }}",
+            "Processed": "yes"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job applied",
+              "displayName": "Job applied",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CV",
+              "displayName": "CV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decision",
+              "displayName": "Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Processed",
+              "displayName": "Processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2016,
+        -2304
+      ],
+      "id": "773d3129-ac56-4bcd-9085-229ece6226cf",
+      "name": "Update row for Qualified Applicant",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BoAx5BYgmFrOupZl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Check Score>=70').item.json.fields.Email }}",
+        "subject": "Interview Invitation ",
+        "message": "=Hi {{ $json.Name }},  Congratulations! After reviewing your application, we’re excited to invite you to the next stage of our hiring process.  Please select your preferred interview time using the link below: [Calendly Link]  We look forward to speaking with you.  Best regards, HR Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        -2304
+      ],
+      "id": "a882568a-72a8-43bf-abf7-fbaa84aa3b29",
+      "name": "Send Interview Email ",
+      "webhookId": "d4e7c14d-0e36-4617-8c87-c517244b15e5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lCin0CgOr3mYYI8M",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM",
+          "mode": "list",
+          "cachedResultName": "applications",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 478367655,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit#gid=478367655"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('AI CV Scoring').item.json.row_number }}",
+            "Timestamp": "={{ $('AI CV Scoring').item.json.Timestamp }}",
+            "Name": "={{ $('AI CV Scoring').item.json.Name }}",
+            "Email": "={{ $('AI CV Scoring').item.json.Email }}",
+            "Address": "={{ $('AI CV Scoring').item.json.Address }}",
+            "Job applied": "={{ $('AI CV Scoring').item.json['Job applied'] }}",
+            "CV": "={{ $('AI CV Scoring').item.json.CV }}",
+            "Decision": "={{ $('AI CV Scoring').item.json.decision }}",
+            "Processed": "yes"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job applied",
+              "displayName": "Job applied",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CV",
+              "displayName": "CV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decision",
+              "displayName": "Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Processed",
+              "displayName": "Processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2016,
+        -1920
+      ],
+      "id": "d0a3dac1-83c9-4d3f-9a7a-d195a1e37ec2",
+      "name": "Update row for Applicant on hold",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BoAx5BYgmFrOupZl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AHMKP0XSM",
+          "mode": "list",
+          "cachedResultName": "social"
+        },
+        "text": "=Candidate on HOLD ⚠️  Name: {{ $json.Name }} Email: {{ $json.Email }}   Review manually.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        2240,
+        -1920
+      ],
+      "id": "1a22b29b-f1cc-45aa-b639-da3cbf62d83f",
+      "name": "Send a Slack Message",
+      "webhookId": "e237ef2e-1c6e-4182-be68-26eea27081cd",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "IPWEHL2N55eTL8LW",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM",
+          "mode": "list",
+          "cachedResultName": "applications",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 478367655,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit#gid=478367655"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('AI CV Scoring').item.json.row_number }}",
+            "Timestamp": "={{ $('AI CV Scoring').item.json.Timestamp }}",
+            "Name": "={{ $('AI CV Scoring').item.json.Name }}",
+            "Email": "={{ $('AI CV Scoring').item.json.Email }}",
+            "Address": "={{ $('AI CV Scoring').item.json.Address }}",
+            "Job applied": "={{ $('AI CV Scoring').item.json['Job applied'] }}",
+            "CV": "={{ $('AI CV Scoring').item.json.CV }}",
+            "Decision": "={{ $('AI CV Scoring').item.json.decision }}",
+            "Processed": "yes"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job applied",
+              "displayName": "Job applied",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CV",
+              "displayName": "CV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decision",
+              "displayName": "Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Processed",
+              "displayName": "Processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2016,
+        -2112
+      ],
+      "id": "65308b63-df39-4e34-b789-115a1e04abab",
+      "name": "Update row for rejected Applicant",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BoAx5BYgmFrOupZl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Create Applicant Applicant').item.json.fields.Email }}",
+        "subject": "Your Application Update",
+        "message": "=Hi {{ $json.Name }},  Thank you for taking the time to apply.  After careful consideration, we have decided to move forward with other candidates at this time.  We truly appreciate your interest and encourage you to apply again in the future.  Wishing you success, HR Team",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        -2112
+      ],
+      "id": "03c4c7c2-2c7a-4916-931f-af280d880ecc",
+      "name": "Send Rejection Email",
+      "webhookId": "c990bfc4-3683-4909-9e34-d49d06b28b57",
+      "alwaysOutputData": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lCin0CgOr3mYYI8M",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM",
+          "mode": "list",
+          "cachedResultName": "applications",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 478367655,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H0GlCeyRZvwBiBkzv68vyrjK8F3koD1RI9lhPKnMygM/edit#gid=478367655"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -2112
+      ],
+      "id": "44f4517a-ebea-4ad2-8e28-0395fe4f739b",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "GwTU6GkS7Zlj22Jr",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -2112
+      ],
+      "id": "f0112f5c-e9d3-4eee-b5e3-c158546095f8",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9cd7dcd8-fb6e-4911-8abe-447759715380",
+              "leftValue": "={{ $json.Processed }}",
+              "rightValue": "=Is Empty",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        -2112
+      ],
+      "id": "ee1cff3b-c20e-4bdb-a560-61bee67707b8",
+      "name": "Only new applicants"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const text = $json.text?.toLowerCase() || \"\";\nlet score = 0;\n\nconst rules = [\n  { keyword: \"bachelor\", points: 20 },\n  { keyword: \"3 years\", points: 25 },\n  { keyword: \"excel\", points: 10 },\n  { keyword: \"python\", points: 10 },\n  { keyword: \"sql\", points: 10 }\n];\n\nrules.forEach(rule => {\n  if (text.includes(rule.keyword)) {\n    score += rule.points;\n  }\n});\n\nlet decision = score >= 70 ? \"Interview\"\n             : score >= 50 ? \"Hold\"\n             : \"Reject\";\n\nreturn {\n  json: {\n    ...$json,\n    score,\n    decision\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -2112
+      ],
+      "id": "6ab92013-3769-4cb0-a49d-658d3050dd5c",
+      "name": "AI CV Scoring"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "=app8ximhjsdHBkXlG",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl1SQLMZBdcUELjK",
+          "mode": "list",
+          "cachedResultName": "candidates",
+          "cachedResultUrl": "https://airtable.com/app8ximhjsdHBkXlG/tbl1SQLMZBdcUELjK"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Status": "In progress",
+            "Score": "={{ $json.score }}",
+            "Job Applied": "={{ $json['Job applied'] }}",
+            "Email": "={{ $json.Email }}",
+            "Decision": "={{ $json.decision }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Todo",
+                  "value": "Todo"
+                },
+                {
+                  "name": "In progress",
+                  "value": "In progress"
+                },
+                {
+                  "name": "Done",
+                  "value": "Done"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Applied date",
+              "displayName": "Applied date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Job Applied",
+              "displayName": "Job Applied",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Decision",
+              "displayName": "Decision",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1344,
+        -2112
+      ],
+      "id": "8642170b-c0dc-4a52-9206-dcbe186c9523",
+      "name": "Create Applicant Applicant",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "ftqx6FwuPvnwNufq",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2f3d55cc-e5ad-4781-8133-52ca9cbb72ec",
+              "leftValue": "={{ $json.fields.Decision }}",
+              "rightValue": "Interview",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        -2112
+      ],
+      "id": "ccb2a1ae-68fe-4f69-a516-970465def3b4",
+      "name": "Check Score>=70"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6a8cd49c-7f73-4b4a-bf21-bea82646f3d7",
+              "leftValue": "={{ $json.fields.Decision }}",
+              "rightValue": "Reject",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1792,
+        -2016
+      ],
+      "id": "d796d8a3-dde7-47b7-a7eb-364f48092c27",
+      "name": "Check Decision=Reject"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Applicaonts details": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return details": {
+      "main": [
+        [
+          {
+            "node": "Download CV File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download CV File": {
+      "main": [
+        [
+          {
+            "node": "Extract CV text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract CV text": {
+      "main": [
+        [
+          {
+            "node": "AI CV Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qualified candidate": {
+      "main": [
+        [
+          {
+            "node": "Update row for Qualified Applicant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row for Qualified Applicant": {
+      "main": [
+        [
+          {
+            "node": "Send Interview Email ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row for Applicant on hold": {
+      "main": [
+        [
+          {
+            "node": "Send a Slack Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row for rejected Applicant": {
+      "main": [
+        [
+          {
+            "node": "Send Rejection Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Rejection Email": {
+      "main": [
+        []
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Applicaonts details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Only new applicants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only new applicants": {
+      "main": [
+        [
+          {
+            "node": "Return details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI CV Scoring": {
+      "main": [
+        [
+          {
+            "node": "Create Applicant Applicant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Applicant Applicant": {
+      "main": [
+        [
+          {
+            "node": "Check Score>=70",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Score>=70": {
+      "main": [
+        [
+          {
+            "node": "Qualified candidate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Decision=Reject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Decision=Reject": {
+      "main": [
+        [
+          {
+            "node": "Update row for rejected Applicant",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row for Applicant on hold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "timeSavedPerExecution": 2,
+    "errorWorkflow": "ygLawhScFCMuLryX"
+  },
+  "versionId": "feaa98a7-9ac5-43f1-90fd-06487e0817ee",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f5feff521b7aa32a181ef3bb52fd4823745a5686e26171ade232efc02876b912"
+  },
+  "id": "rS5r9xX1dv5jg6Yb",
+  "tags": []
+}
